@@ -1,0 +1,23 @@
+{
+  "name": "rooftop---challenge-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemom app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxirodriguez94/Rooftop---Challenge-Backend.git"
+  },
+  "author": "Maximiliano Rodriguez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxirodriguez94/Rooftop---Challenge-Backend/issues"
+  },
+  "homepage": "https://github.com/maxirodriguez94/Rooftop---Challenge-Backend#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
