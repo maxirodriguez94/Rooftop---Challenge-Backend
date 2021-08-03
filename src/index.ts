@@ -30,6 +30,10 @@ app.get("/", (req, res) => {
   res.send("ok");
 });
 
+
+
+
+
 app.post("/coupons", (req, res) => {
   let code = req.body.code;
   let result = couponSchema.validate(req.body, { abortEarly: false });
@@ -53,6 +57,30 @@ app.delete("/coupons/:id", async (req, res) => {
   } else {
     res.status(404).send();
   }
+});
+
+app.patch("/coupons/", async (req, res) => {
+  const { email } = req.body;
+  const coupon = await couponRepository.findByEmail(email);
+  console.log(coupon);
+  if (coupon) {
+    return res.status(422).send();
+  }
+
+  const availableCoupon = await couponRepository.findAvailable();
+  console.log(req.body);
+
+  if (availableCoupon) {
+    availableCoupon.customerEmail = email;
+
+    await couponRepository.saveCoupon(availableCoupon);
+
+    return res
+      .status(201)
+      .json({ message: "Coupon assigned", couponCode: availableCoupon.code });
+  }
+
+  res.status(422).json({ message: "No available coupons" });
 });
 
 app.listen(9119);
