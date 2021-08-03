@@ -7,11 +7,19 @@ export class CouponRepository {
     return getRepository(Coupon).save(coupon);
   }
 
-  findEmail(customerEmail: String): Promise<Coupon> {
-    return getRepository(Coupon).findOneOrFail({
+  findByIdAndEmail(
+    id: String,
+    email: String | null
+  ): Promise<Coupon | undefined> {
+    return getRepository(Coupon).findOne({
       where: {
-        customerEmail: customerEmail,
+        id: id,
+        customerEmail: email,
       },
     });
+  }
+
+  remove(coupon: Coupon): Promise<Coupon> {
+    return getRepository(Coupon).remove(coupon);
   }
 }
