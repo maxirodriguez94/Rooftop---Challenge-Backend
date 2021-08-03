@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 export class Coupon {
     
     @PrimaryGeneratedColumn()
-    id : Number
+     id : Number
 
     @Column({name : "assigned_at"})
     asignedAt : Date
@@ -19,4 +19,6 @@ export class Coupon {
 
     @Column({name : "expires_at"})
     expireAt : Date
+
+    
 }

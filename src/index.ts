@@ -1,6 +1,11 @@
 import express from "express";
 import "reflect-metadata";
-import { Connection, createConnection, getRepository } from "typeorm";
+import {
+  Connection,
+  createConnection,
+  getRepository,
+  Repository,
+} from "typeorm";
 import { Coupon } from "./Entities/Coupon";
 import { CouponRepository } from "./Repositories/CouponRepository";
 const couponSchema = require("./validates/coupon");
@@ -25,18 +30,29 @@ app.get("/", (req, res) => {
   res.send("ok");
 });
 
-app.post("/coupon", (req, res) => {
-  let code = req.body.code
+app.post("/coupons", (req, res) => {
+  let code = req.body.code;
   let result = couponSchema.validate(req.body, { abortEarly: false });
 
-  //corregir mensaje de error
-  if (result.error) {
+  //corregir mensaje
+  if (result.errocouponr) {
     return res.status(422).json(result);
   }
-  couponRepository
-    .saveCoupon(req.body)
-    .then((resultado) => res.send(code));
-    
+  couponRepository.saveCoupon(req.body).then((resultado) => res.send(code));
 });
 
-app.listen(5005);
+app.delete("/coupons/:id", async (req, res) => {
+  let coupon = await couponRepository.findByIdAndEmail(req.params.id, null);
+
+  if (coupon instanceof Coupon) {
+    couponRepository
+      .remove(coupon)
+      .then(() =>
+        res.status(201).json({ message: "Coupon succesfully deleted" }).send()
+      );
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.listen(9119);
