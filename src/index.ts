@@ -10,6 +10,7 @@ import { Coupon } from "./Entities/Coupon";
 import { CouponRepository } from "./Repositories/CouponRepository";
 import { Store } from "./Entities/Store";
 import { StoreRepository } from "./Repositories/StoreRepository";
+import { compile } from "joi";
 const couponSchema = require("./validates/coupon");
 const boom = require("@hapi/boom");
 var bodyParser = require("body-parser");
@@ -85,7 +86,7 @@ app.patch("/coupons/", async (req, res) => {
 });
 
 //STORES
-
+//paginate/cant tiendas
 app.get("/stores/:name?", (req, res) => {
   if (req.params.name)
     storeRepository
@@ -97,4 +98,17 @@ app.get("/stores/:name?", (req, res) => {
   storeRepository.findAll().then((stores) => res.send(stores));
 });
 
-app.listen(1625);
+app.delete("/stores/:id", async (req, res) => {
+  let store = await storeRepository.findId(req.params.id);
+  console.log(store);
+
+  if (store) {
+    storeRepository
+      .remove(store)
+      .then(() => res.status(201).json({ message: "Store succesfull" }).send());
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.listen(4538);
