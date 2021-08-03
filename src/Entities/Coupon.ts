@@ -20,5 +20,4 @@ export class Coupon {
     @Column({name : "expires_at"})
     expireAt : Date
 
-    
 }
