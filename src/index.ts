@@ -86,9 +86,15 @@ app.patch("/coupons/", async (req, res) => {
 
 //STORES
 
-app.get("/stores", (req, res) => {
+app.get("/stores/:name?", (req, res) => {
+  if (req.params.name)
+    storeRepository
+      .findName(req.params.name)
+      .then((resultado) => res.send(resultado))
+      .catch((err) => {
+        res.send({ message: "error" });
+      });
   storeRepository.findAll().then((stores) => res.send(stores));
-})
+});
 
-
-app.listen(9641);
+app.listen(1625);
