@@ -8,11 +8,14 @@ import {
 } from "typeorm";
 import { Coupon } from "./Entities/Coupon";
 import { CouponRepository } from "./Repositories/CouponRepository";
+import { Store } from "./Entities/Store";
+import { StoreRepository } from "./Repositories/StoreRepository";
 const couponSchema = require("./validates/coupon");
 const boom = require("@hapi/boom");
 var bodyParser = require("body-parser");
 
 const couponRepository = new CouponRepository();
+const storeRepository = new StoreRepository();
 
 createConnection()
   .then((connection) => {})
@@ -26,7 +29,7 @@ app.use(
 );
 app.use(bodyParser.json());
 
-//COUPONS
+//COUPON
 app.get("/coupons", (req, res) => {
   couponRepository.findAll().then((coupons) => res.send(coupons));
 });
@@ -81,6 +84,11 @@ app.patch("/coupons/", async (req, res) => {
   res.status(422).json({ message: "No available coupons" });
 });
 
+//STORES
+
+app.get("/stores", (req, res) => {
+  storeRepository.findAll().then((stores) => res.send(stores));
+})
 
 
-app.listen(9149);
+app.listen(9641);
