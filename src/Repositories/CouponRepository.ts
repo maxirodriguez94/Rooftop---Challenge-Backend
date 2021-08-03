@@ -22,4 +22,41 @@ export class CouponRepository {
   remove(coupon: Coupon): Promise<Coupon> {
     return getRepository(Coupon).remove(coupon);
   }
+
+  findAll(): Promise<Coupon[]> {
+    return getRepository(Coupon).createQueryBuilder("coupon").getMany();
+  }
+
+  findCode(id: String): Promise<Coupon> {
+    return getRepository(Coupon).findOneOrFail({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  findId(id: String): Promise<Coupon> {
+    return getRepository(Coupon).findOneOrFail({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  findAvailable(): Promise<Coupon | undefined> {
+    return getRepository(Coupon).findOne({
+      where: {
+        customerEmail: null,
+      },
+    });
+  }
+
+  findByEmail(customerEmail: String): Promise<Coupon | undefined> {
+    return getRepository(Coupon).findOne({
+      where: {
+        customerEmail: customerEmail,
+      },
+    });
+  }
+
 }
