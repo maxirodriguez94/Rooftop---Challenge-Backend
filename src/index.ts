@@ -26,13 +26,16 @@ app.use(
 );
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.send("ok");
+//COUPONS
+app.get("/coupons", (req, res) => {
+  couponRepository.findAll().then((coupons) => res.send(coupons));
 });
 
-
-
-
+app.get("/coupons/:id", (req, res) => {
+  couponRepository
+    .findCode(req.params.id)
+    .then((resultado) => res.send(resultado));
+});
 
 app.post("/coupons", (req, res) => {
   let code = req.body.code;
@@ -62,25 +65,22 @@ app.delete("/coupons/:id", async (req, res) => {
 app.patch("/coupons/", async (req, res) => {
   const { email } = req.body;
   const coupon = await couponRepository.findByEmail(email);
-  console.log(coupon);
+
   if (coupon) {
     return res.status(422).send();
   }
-
+  //ver validacion errores
   const availableCoupon = await couponRepository.findAvailable();
-  console.log(req.body);
-
   if (availableCoupon) {
     availableCoupon.customerEmail = email;
-
     await couponRepository.saveCoupon(availableCoupon);
-
     return res
       .status(201)
       .json({ message: "Coupon assigned", couponCode: availableCoupon.code });
   }
-
   res.status(422).json({ message: "No available coupons" });
 });
 
-app.listen(9119);
+
+
+app.listen(9149);
