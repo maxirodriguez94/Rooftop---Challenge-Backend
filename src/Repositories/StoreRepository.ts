@@ -26,4 +26,8 @@ export class StoreRepository {
       },
     });
   }
+
+  saveStore(store: Store): Promise<Store> {
+    return getRepository(Store).save(store);
+  }
 }
