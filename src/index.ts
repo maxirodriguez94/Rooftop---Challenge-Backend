@@ -12,6 +12,7 @@ import { Store } from "./Entities/Store";
 import { StoreRepository } from "./Repositories/StoreRepository";
 import { compile } from "joi";
 const couponSchema = require("./validates/coupon");
+const storeSchema = require("./validates/store")
 const boom = require("@hapi/boom");
 var bodyParser = require("body-parser");
 
@@ -111,7 +112,12 @@ app.delete("/stores/:id", async (req, res) => {
   }
 });
 
-app.post("/stores", (req, res) => {
+app.post("/stores",(req, res) => {
+  let result = storeSchema.validate(req.body, { abortEarly: false });
+  console.log(req.body)
+  if (result.error) {
+    return res.status(422).json(result);
+  }
   storeRepository
     .saveStore(req.body)
     .then((date) =>
@@ -119,4 +125,4 @@ app.post("/stores", (req, res) => {
     );
 });
 
-app.listen(4538);
+app.listen(7581);
