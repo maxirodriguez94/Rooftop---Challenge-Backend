@@ -111,4 +111,12 @@ app.delete("/stores/:id", async (req, res) => {
   }
 });
 
+app.post("/stores", (req, res) => {
+  storeRepository
+    .saveStore(req.body)
+    .then((date) =>
+      res.status(200).json({ message: "Successfully created store" })
+    );
+});
+
 app.listen(4538);
