@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { getRepository, UpdateResult, DeleteResult } from "typeorm";
+import { PaginationAwareObject } from "typeorm-pagination/dist/helpers/pagination";
 import { Store } from "../Entities/Store";
 
 export class StoreRepository {
-  findAll(): Promise<Store[]> {
-    return getRepository(Store).createQueryBuilder("store").getMany();
+  findAll(): Promise<PaginationAwareObject> {
+    return getRepository(Store).createQueryBuilder("store").paginate(10);
   }
 
   findName(name?: String): Promise<Store> {
