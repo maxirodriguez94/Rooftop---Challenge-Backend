@@ -23,18 +23,14 @@ export class CouponRepository {
     return getRepository(Coupon).remove(coupon);
   }
 
-  findCode(id: String): Promise<Coupon> {
+  findCodeAndCustomerEmail(
+    code: any,
+    customerEmail: any
+  ): Promise<Coupon> {
     return getRepository(Coupon).findOneOrFail({
       where: {
-        id: id,
-      },
-    });
-  }
-
-  findId(id: String): Promise<Coupon> {
-    return getRepository(Coupon).findOneOrFail({
-      where: {
-        id: id,
+        code: code,
+        customerEmail: customerEmail
       },
     });
   }
@@ -58,5 +54,4 @@ export class CouponRepository {
   findAll(): Promise<Coupon[]> {
     return getRepository(Coupon).createQueryBuilder("coupon").getMany();
   }
-
 }
