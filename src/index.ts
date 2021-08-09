@@ -52,7 +52,7 @@ app.post("/coupons", async (req, res) => {
     return res.status(422).json({errors: details.map((d: { message: any; }) => d.message)});
   }
 
-  couponRepository.saveCoupon(req.body).then((resultado) => res.status(201).send(code));
+  couponRepository.saveCoupon(req.body).then((resultado) => res.status(201).send({message: 'Coupon created succesfully'}));
 });
 
 app.delete("/coupons/:id", async (req, res) => {
@@ -74,7 +74,7 @@ app.patch("/coupons", async (req, res) => {
   const coupon = await couponRepository.findByEmail(email);
 
   if (coupon) {
-    return res.status(422).send();
+    return res.status(422).send({message: 'The email already has an assigned coupon'});
   }
 
   const availableCoupon = await couponRepository.findAvailable();
