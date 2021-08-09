@@ -94,7 +94,7 @@ app.get("/stores", (req, res) => {
     .findByName(req.query.name)
     .then((result) => res.send(result))
     .catch((err) => {
-      res.send({ message: "Error" });
+      res.status(404).send({ message: "Store not found" });
     });
   } else {
     storeRepository.findAll().then((stores) => res.send(stores));
