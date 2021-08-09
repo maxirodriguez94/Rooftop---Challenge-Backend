@@ -20,4 +20,6 @@ export class Coupon {
     @Column({name : "expires_at"})
     expireAt : Date
 
+    @Column({name :"created_at"})
+    createdAt : Date
 }
