@@ -1,8 +1,8 @@
 # Rooftop--Challenge-Backend
 
-##Pasos para utilizar
+## Pasos para utilizar
 
-####Clonar el proyecto
+#### Clonar el proyecto
 ```git clone https://github.com/maxirodriguez94/Rooftop---Challenge-Backend```
 
 #### Iniciar Proyecto
