@@ -10,9 +10,11 @@ import { Coupon } from "./Entities/Coupon";
 import { CouponRepository } from "./Repositories/CouponRepository";
 import { Store } from "./Entities/Store";
 import { StoreRepository } from "./Repositories/StoreRepository";
-import { compile } from "joi";
-const couponSchema = require("./validates/coupon");
-const storeSchema = require("./validates/store")
+import { compile, date, string } from "joi";
+const couponSchema = require("./Validates/Coupon/code");
+const storeSchema = require("./Validates/Store/store");
+import { pagination } from "typeorm-pagination";
+import { json } from "body-parser";
 const boom = require("@hapi/boom");
 var bodyParser = require("body-parser");
 
@@ -30,24 +32,31 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+app.use(pagination);
 
 //COUPON
 app.get("/coupons", (req, res) => {
-  couponRepository.findAll().then((coupons) => res.send(coupons));
+  const code = req.query.code;
+  const customerEmail = req.query.customerEmail;
+
+  if (code && customerEmail) {
+    couponRepository
+      .findCodeByCustomerEmail(code, customerEmail)
+      .then((coupon) => res.send(coupon))
+      .catch((err) => {
+        res.status(404).json({ message: "error" });
+      });
+  } else {
+    couponRepository.findAll().then((coupons) => res.send(coupons));
+  }
 });
 
-app.get("/coupons/:id", (req, res) => {
-  couponRepository
-    .findCode(req.params.id)
-    .then((resultado) => res.send(resultado));
-});
-
-app.post("/coupons", (req, res) => {
+app.post("/coupons", async (req, res) => {
   let code = req.body.code;
   let result = couponSchema.validate(req.body, { abortEarly: false });
 
   //corregir mensaje
-  if (result.errocouponr) {
+  if (result.error) {
     return res.status(422).json(result);
   }
   couponRepository.saveCoupon(req.body).then((resultado) => res.send(code));
@@ -67,14 +76,14 @@ app.delete("/coupons/:id", async (req, res) => {
   }
 });
 
-app.patch("/coupons/", async (req, res) => {
+app.patch("/coupons", async (req, res) => {
   const { email } = req.body;
   const coupon = await couponRepository.findByEmail(email);
 
   if (coupon) {
     return res.status(422).send();
   }
-  //ver validacion errores
+
   const availableCoupon = await couponRepository.findAvailable();
   if (availableCoupon) {
     availableCoupon.customerEmail = email;
@@ -87,7 +96,6 @@ app.patch("/coupons/", async (req, res) => {
 });
 
 //STORES
-//paginate/cant tiendas
 app.get("/stores/:name?", (req, res) => {
   if (req.params.name)
     storeRepository
@@ -101,8 +109,6 @@ app.get("/stores/:name?", (req, res) => {
 
 app.delete("/stores/:id", async (req, res) => {
   let store = await storeRepository.findId(req.params.id);
-  console.log(store);
-
   if (store) {
     storeRepository
       .remove(store)
@@ -112,9 +118,8 @@ app.delete("/stores/:id", async (req, res) => {
   }
 });
 
-app.post("/stores",(req, res) => {
+app.post("/stores", (req, res) => {
   let result = storeSchema.validate(req.body, { abortEarly: false });
-  console.log(req.body)
   if (result.error) {
     return res.status(422).json(result);
   }
@@ -125,4 +130,20 @@ app.post("/stores",(req, res) => {
     );
 });
 
-app.listen(7581);
+app.get("/stats", async (req, res) => {
+  const totalCoupon = await couponRepository.totalCount();
+  const assignedCount = await couponRepository.assignedCount();
+  const notAssignedCount = await couponRepository.notAssignedCount();
+  const groupedByCreated = await couponRepository.groupByCreatedAt();
+  const groupedByAssgined = await couponRepository.groupByAssignedAt();
+
+  res.json({
+    totalCoupon,
+    assignedCount,
+    notAssignedCount,
+    groupedByCreated,
+    groupedByAssgined,
+  });
+});
+
+app.listen(5951);
