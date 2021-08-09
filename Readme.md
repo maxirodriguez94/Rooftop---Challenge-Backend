@@ -11,6 +11,14 @@
 
 ```npm install```
 
+Se agrego una nueva columna a coupons, por lo tanto es necesario ejecutar el siguiente script:
+
+```ALTER TABLE "rooftop-backend-challenge".coupons ADD COLUMN created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP;```
+
+
+Ejecutar:
+
+
 ```npm run dev```
 
 #### Importar ejemplos en Postman
