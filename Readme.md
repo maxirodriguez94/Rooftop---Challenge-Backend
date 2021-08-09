@@ -6,7 +6,7 @@
 ```git clone https://github.com/maxirodriguez94/Rooftop---Challenge-Backend```
 
 #### Iniciar Proyecto
-````cp .env.example .env```
+```cp .env.example .env```
 (configurar .env)
 
 ```npm install```
