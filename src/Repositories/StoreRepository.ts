@@ -3,12 +3,18 @@ import { getRepository, UpdateResult, DeleteResult } from "typeorm";
 import { PaginationAwareObject } from "typeorm-pagination/dist/helpers/pagination";
 import { Store } from "../Entities/Store";
 
+const ITEMS_PER_PAGE = 10;
+
 export class StoreRepository {
   findAll(): Promise<PaginationAwareObject> {
-    return getRepository(Store).createQueryBuilder("store").paginate(10);
+    return getRepository(Store).createQueryBuilder("store").paginate(ITEMS_PER_PAGE);
   }
 
-  findName(name?: String): Promise<Store> {
+  count():Promise<Number>{
+    return getRepository(Store).count()
+  }
+
+  findByName(name: any): Promise<Store> {
     return getRepository(Store).findOneOrFail({
       where: {
         name: name,

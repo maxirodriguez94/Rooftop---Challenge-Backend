@@ -1,21 +1,12 @@
 import express from "express";
 import "reflect-metadata";
-import {
-  Connection,
-  createConnection,
-  getRepository,
-  Repository,
-} from "typeorm";
+import { createConnection } from "typeorm";
 import { Coupon } from "./Entities/Coupon";
 import { CouponRepository } from "./Repositories/CouponRepository";
-import { Store } from "./Entities/Store";
 import { StoreRepository } from "./Repositories/StoreRepository";
-import { compile, date, string } from "joi";
 const couponSchema = require("./Validates/Coupon/code");
 const storeSchema = require("./Validates/Store/store");
 import { pagination } from "typeorm-pagination";
-import { json } from "body-parser";
-const boom = require("@hapi/boom");
 var bodyParser = require("body-parser");
 
 const couponRepository = new CouponRepository();
@@ -44,7 +35,7 @@ app.get("/coupons", (req, res) => {
       .findCodeByCustomerEmail(code, customerEmail)
       .then((coupon) => res.send(coupon))
       .catch((err) => {
-        res.status(404).json({ message: "error" });
+        res.status(404).json({ message: "Error" });
       });
   } else {
     couponRepository.findAll().then((coupons) => res.send(coupons));
@@ -55,11 +46,11 @@ app.post("/coupons", async (req, res) => {
   let code = req.body.code;
   let result = couponSchema.validate(req.body, { abortEarly: false });
 
-  //corregir mensaje
   if (result.error) {
     return res.status(422).json(result);
   }
-  couponRepository.saveCoupon(req.body).then((resultado) => res.send(code));
+
+  couponRepository.saveCoupon(req.body).then((resultado) => res.status(201).send(code));
 });
 
 app.delete("/coupons/:id", async (req, res) => {
@@ -92,19 +83,22 @@ app.patch("/coupons", async (req, res) => {
       .status(201)
       .json({ message: "Coupon assigned", couponCode: availableCoupon.code });
   }
+
   res.status(422).json({ message: "No available coupons" });
 });
 
 //STORES
-app.get("/stores/:name?", (req, res) => {
-  if (req.params.name)
+app.get("/stores", (req, res) => {
+  if (req.query.name) {
     storeRepository
-      .findName(req.params.name)
-      .then((resultado) => res.send(resultado))
-      .catch((err) => {
-        res.send({ message: "error" });
-      });
-  storeRepository.findAll().then((stores) => res.send(stores));
+    .findByName(req.query.name)
+    .then((result) => res.send(result))
+    .catch((err) => {
+      res.send({ message: "Error" });
+    });
+  } else {
+    storeRepository.findAll().then((stores) => res.send(stores));
+  }
 });
 
 app.delete("/stores/:id", async (req, res) => {
