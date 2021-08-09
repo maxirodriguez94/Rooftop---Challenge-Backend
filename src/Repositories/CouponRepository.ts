@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { getRepository, UpdateResult, DeleteResult } from "typeorm";
+import {
+  getRepository,
+  UpdateResult,
+  DeleteResult,
+  IsNull,
+  Not,
+} from "typeorm";
 import { Coupon } from "../Entities/Coupon";
 
 export class CouponRepository {
@@ -23,14 +29,11 @@ export class CouponRepository {
     return getRepository(Coupon).remove(coupon);
   }
 
-  findCodeAndCustomerEmail(
-    code: any,
-    customerEmail: any
-  ): Promise<Coupon> {
+  findCodeByCustomerEmail(code: any, customerEmail: any): Promise<Coupon> {
     return getRepository(Coupon).findOneOrFail({
       where: {
         code: code,
-        customerEmail: customerEmail
+        customerEmail: customerEmail,
       },
     });
   }
@@ -53,5 +56,42 @@ export class CouponRepository {
 
   findAll(): Promise<Coupon[]> {
     return getRepository(Coupon).createQueryBuilder("coupon").getMany();
+  }
+
+  totalCount(): Promise<number> {
+    return getRepository(Coupon).count();
+  }
+
+  assignedCount(): Promise<number> {
+    return getRepository(Coupon).count({
+      where: {
+        customerEmail: Not(IsNull()),
+      },
+    });
+  }
+
+  notAssignedCount(): Promise<number> {
+    return getRepository(Coupon).count({
+      where: {
+        customerEmail: IsNull(),
+      },
+    });
+  }
+
+  groupByCreatedAt(): Promise<any[]> {
+    return getRepository(Coupon)
+      .createQueryBuilder("coupon")
+      .select("DATE(coupon.createdAt), COUNT(*)")
+      .groupBy("1")
+      .getRawMany();
+  }
+
+  groupByAssignedAt(): Promise<any[]> {
+    return getRepository(Coupon)
+      .createQueryBuilder("coupon")
+      .select("DATE(coupon.asignedAt), COUNT(*)")
+      .where("coupon.asignedAt IS NOT NULL")
+      .groupBy("1")
+      .getRawMany();
   }
 }
