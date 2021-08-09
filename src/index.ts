@@ -47,7 +47,9 @@ app.post("/coupons", async (req, res) => {
   let result = couponSchema.validate(req.body, { abortEarly: false });
 
   if (result.error) {
-    return res.status(422).json(result);
+    const { details } = result.error; 
+
+    return res.status(422).json({errors: details.map((d: { message: any; }) => d.message)});
   }
 
   couponRepository.saveCoupon(req.body).then((resultado) => res.status(201).send(code));
@@ -106,7 +108,7 @@ app.delete("/stores/:id", async (req, res) => {
   if (store) {
     storeRepository
       .remove(store)
-      .then(() => res.status(201).json({ message: "Store succesfull" }).send());
+      .then(() => res.status(201).json({ message: "Store deleted succesfull" }).send());
   } else {
     res.status(404).send();
   }
@@ -115,11 +117,13 @@ app.delete("/stores/:id", async (req, res) => {
 app.post("/stores", (req, res) => {
   let result = storeSchema.validate(req.body, { abortEarly: false });
   if (result.error) {
-    return res.status(422).json(result);
+    const { details } = result.error; 
+
+    return res.status(422).json({errors: details.map((d: { message: any; }) => d.message)});
   }
   storeRepository
     .saveStore(req.body)
-    .then((date) =>
+    .then(() =>
       res.status(200).json({ message: "Successfully created store" })
     );
 });
@@ -140,4 +144,4 @@ app.get("/stats", async (req, res) => {
   });
 });
 
-app.listen(5951);
+app.listen(3001);
